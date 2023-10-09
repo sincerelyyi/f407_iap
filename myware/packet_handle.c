@@ -20,15 +20,9 @@
 #include "stdio.h"
 #include "version.h"
 #include "string.h"
-#include "74HC165.h"
-#include "Fm24c64.h"
 #include "gpio.h"
-#include "MBI6024.h"
 #include "usart.h"
-#include "light.h"
 #include "mainFunction.h"
-#include "counter.h"
-#include "coin.h"
 #include <stm32f4xx_hal_flash.h>
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
@@ -345,7 +339,6 @@ void get_UID(uint8_t channel)
 *****************************************************************************************/
 void get_keys(uint8_t channel)
 {
-    answer_bin(master_get_keys,in165_buff,NUM_165,channel);
 }
 
 /** **************************************************************************************
@@ -357,10 +350,6 @@ void get_keys(uint8_t channel)
 *****************************************************************************************/
 void get_coins(uint8_t channel)
 {
-    if(Game_state == 0)
-        answer_bin(master_get_coins,(uint8_t *)FM.coin_num,8,channel);
-    else if(Game_state == 1)
-        answer_bin(master_get_coins,(uint8_t *)Tmp_coin,8,channel);
 }
 
 /** **************************************************************************************
@@ -372,50 +361,6 @@ void get_coins(uint8_t channel)
 *****************************************************************************************/
 void decrease_coins(uint8_t *buff,uint16_t len,uint8_t channel)
 {
-    if(len != 13)
-    {
-        return;
-    }
-    if(Game_state == 0)///< normall mode
-    {
-        if(FM.coin_num[0]> *((uint16_t*)(buff+3)))
-            FM.coin_num[0] = FM.coin_num[0] - *((uint16_t *)(buff + 3));
-        else
-            FM.coin_num[0] = 0;
-        if(FM.coin_num[1]> *((uint16_t*)(buff+5)))
-            FM.coin_num[1] = FM.coin_num[1] - *((uint16_t *)(buff + 5));
-        else
-            FM.coin_num[1] = 0;
-        if(FM.coin_num[2]> *((uint16_t*)(buff+7)))
-            FM.coin_num[2] = FM.coin_num[2] - *((uint16_t *)(buff + 7));
-        else
-            FM.coin_num[2] = 0;
-        if(FM.coin_num[3]> *((uint16_t*)(buff+9)))
-            FM.coin_num[3] = FM.coin_num[3] - *((uint16_t *)(buff + 9));
-        else
-            FM.coin_num[3] = 0;
-        answer_bin(master_decrease_coins,(uint8_t *)FM.coin_num,8,channel);
-    }
-    else if(Game_state == 1) ///< administrator mode
-    {
-        if(Tmp_coin[0]>*((uint16_t*)(buff+3)))
-            Tmp_coin[0] = Tmp_coin[0] - *((uint16_t *)(buff +3));
-        else
-            Tmp_coin[0] = 0;
-        if(Tmp_coin[1]>*((uint16_t*)(buff+5)))
-            Tmp_coin[1] = Tmp_coin[1] - *((uint16_t *)(buff +5));
-        else
-            Tmp_coin[1] = 0;
-        if(Tmp_coin[2]>*((uint16_t*)(buff+7)))
-            Tmp_coin[2] = Tmp_coin[2] - *((uint16_t *)(buff +7));
-        else
-            Tmp_coin[2] = 0;
-        if(Tmp_coin[3]>*((uint16_t*)(buff+9)))
-            Tmp_coin[3] = Tmp_coin[3] - *((uint16_t *)(buff +9));
-        else
-            Tmp_coin[3] = 0;
-        answer_bin(master_decrease_coins,(uint8_t *)Tmp_coin,8,channel);
-    }
 }
 
 /** **************************************************************************************
@@ -487,16 +432,6 @@ void reset_usb(uint8_t channel)
 *****************************************************************************************/
 void pwm_ll(uint8_t *buff,uint16_t len)
 {
-    if(len-5 != MBI6024IN_NUM*12)  //防止数据长度不对
-    {
-        return;
-    }
-    for(uint16_t i=0; i<len-5; i++)
-    {
-        //MbiIn_UserGrayBuff[i] = ((uint16_t)buff[3+i]<<8);
-        Pwm.pwm_data[i] =  ((uint16_t)buff[3+i]<<8);
-        Pwm.command = buff[1];
-    }
 }
 
 /** **************************************************************************************
@@ -508,19 +443,6 @@ void pwm_ll(uint8_t *buff,uint16_t len)
 *****************************************************************************************/
 void circle_ll(uint8_t *buff,uint16_t len)
 {
-    if(len-6 != 78)  //防止数据长度不对
-    {
-        return;
-    }
-    if(buff[3]>3)  //buff[3]表明环形灯序号
-    {
-        return;
-    }
-    for(uint16_t i=0; i<len-6; i++)
-    {
-        Circle[buff[3]]->pwm_data[i] =  ((uint16_t)buff[4+i]<<8);
-    }
-    Circle[buff[3]]->command = buff[1];
 }
 
 /** **************************************************************************************
@@ -532,15 +454,6 @@ void circle_ll(uint8_t *buff,uint16_t len)
 *****************************************************************************************/
 void pwm_channel(uint8_t *buff,uint16_t len)
 {
-    if(len-5 != MBI6024IN_NUM*12)  //防止数据长度不对
-    {
-        return;
-    }
-    for(uint16_t i=0; i<len-5; i++)
-    {
-        Pwm.channel_state[i] = buff[3+i];
-        Pwm.command = buff[1];
-    }
 }
 
 /** **************************************************************************************
@@ -552,19 +465,6 @@ void pwm_channel(uint8_t *buff,uint16_t len)
 *****************************************************************************************/
 void circle_channel(uint8_t *buff,uint16_t len)
 {
-    if(len-6 != 78)  //防止数据长度不对
-    {
-        return;
-    }
-    if(buff[3]>3)  //buff[3]表明环形灯序号
-    {
-        return;
-    }
-    for(uint16_t i=0; i<len-6; i++)
-    {
-        Circle[buff[3]]->channel_state[i] =  ((uint16_t)buff[4+i]);
-    }
-    Circle[buff[3]]->command = buff[1];
 }
 
 /** **************************************************************************************
@@ -576,12 +476,6 @@ void circle_channel(uint8_t *buff,uint16_t len)
 *****************************************************************************************/
 void pwm_all(uint8_t *buff,uint16_t len)
 {
-    if(len-5 != 1)  //防止数据长度不对
-    {
-        return;
-    }
-    Pwm.all_state = buff[3];
-    Pwm.command = buff[1];
 }
 
 /** **************************************************************************************
@@ -593,16 +487,6 @@ void pwm_all(uint8_t *buff,uint16_t len)
 *****************************************************************************************/
 void circle_all(uint8_t *buff,uint16_t len)
 {
-    if(len-5 != 2)  //防止数据长度不对
-    {
-        return;
-    }
-    if(buff[3]>3)  //buff[3]表明环形灯序号
-    {
-        return;
-    }
-    Circle[buff[3]]->all_state =  ((uint16_t)buff[4]);
-    Circle[buff[3]]->command = buff[1];
 }
 
 /** **************************************************************************************
@@ -614,35 +498,6 @@ void circle_all(uint8_t *buff,uint16_t len)
 *****************************************************************************************/
 static void get_pwm_state(uint8_t *buff,uint16_t len,uint8_t channel)
 {
-    uint8_t send_buff[1+Pwm.channel_num];
-    if(len-5 != 0)  //防止数据长度不对
-    {
-        return;
-    }
-    switch(Pwm.command)
-    {
-    case master_pwm_all:///< 整体样式
-        send_buff[0] = Pwm.command;
-        send_buff[1] = Pwm.all_state;
-        answer_bin(buff[1],send_buff,2, channel);
-        break;
-    case master_pwm_channel:///< 通道样式
-        send_buff[0] = Pwm.command;
-        memcpy(send_buff+1, Pwm.channel_state, Pwm.channel_num);
-        answer_bin(buff[1],send_buff,sizeof(send_buff), channel);
-        break;
-    case master_pwm_ll:///< 底层控制
-        send_buff[0] = Pwm.command;
-        memcpy(send_buff+1,Pwm.pwm_data, Pwm.channel_num);
-        answer_bin(buff[1],send_buff,sizeof(send_buff), channel);
-        break;
-    default:
-        Pwm.command = master_pwm_ll;
-        send_buff[0] = Pwm.command;
-        memcpy(send_buff+1, Pwm.pwm_data, Pwm.channel_num);
-        answer_bin(buff[1],send_buff,sizeof(send_buff), channel);
-
-    }
 }
 
 /** **************************************************************************************
@@ -654,39 +509,6 @@ static void get_pwm_state(uint8_t *buff,uint16_t len,uint8_t channel)
 *****************************************************************************************/
 static void get_circle_state(uint8_t *buff,uint16_t len,uint8_t channel)
 {
-    uint8_t send_buff[2+Circle[buff[3]]->channel_num];
-    if(len-5 != 1)  //防止数据长度不对
-    {
-        return;
-    }
-    switch(Circle[buff[3]]->command)
-    {
-    case master_circle_all:///< 整体样式
-        send_buff[0] = Circle[buff[3]]->command;
-        send_buff[1] = buff[3]; //表明环形灯序号
-        send_buff[3] = Circle[buff[3]]->all_state;
-        answer_bin(buff[1],send_buff,3, channel);
-        break;
-    case master_circle_channel:///< 通道样式
-        send_buff[0] = Circle[buff[3]]->command;
-        send_buff[1] = buff[3]; //表明环形灯序号
-        memcpy(send_buff+2, Circle[buff[3]]->channel_state, Circle[buff[3]]->channel_num);
-        answer_bin(buff[1],send_buff,sizeof(send_buff), channel);
-        break;
-    case master_circle_ll:///< 底层控制
-        send_buff[0] = Circle[buff[3]]->command;
-        send_buff[1] = buff[3]; //表明环形灯序号
-        memcpy(send_buff+2, Circle[buff[3]]->pwm_data, Circle[buff[3]]->channel_num);
-        answer_bin(buff[1],send_buff,sizeof(send_buff), channel);
-        break;
-    default:
-        Circle[buff[3]]->command = master_circle_ll;
-        send_buff[0] =Circle[buff[3]]->command;
-        send_buff[1] = buff[3]; //表明环形灯序号
-        memcpy(send_buff+2, Circle[buff[3]]->pwm_data, Circle[buff[3]]->channel_num);
-        answer_bin(buff[1],send_buff,sizeof(send_buff), channel);
-
-    }
 }
 
 /** **************************************************************************************
@@ -698,23 +520,6 @@ static void get_circle_state(uint8_t *buff,uint16_t len,uint8_t channel)
 *****************************************************************************************/
 void set_game_state(uint8_t *buff,uint16_t len,uint8_t channel)
 {
-    if(len -5 != 1)
-    {
-        return;
-    }
-    if(buff[3] == 0)
-    {
-        Game_state = 0;
-    }
-    else if(buff[3] == 1)
-    {
-        Game_state = 1;
-    }
-    else
-    {
-        return;
-    }
-    answer_bin(master_set_game_state,&buff[3],1,channel);
 }
 
 /** **************************************************************************************
@@ -726,11 +531,6 @@ void set_game_state(uint8_t *buff,uint16_t len,uint8_t channel)
 *****************************************************************************************/
 void get_game_state(uint8_t *buff,uint16_t len,uint8_t channel)
 {
-    if(len -5 != 0)
-    {
-        return;
-    }
-    answer_bin(master_get_game_state,&Game_state,1,channel);
 }
 
 /** **************************************************************************************
@@ -742,27 +542,6 @@ void get_game_state(uint8_t *buff,uint16_t len,uint8_t channel)
 *****************************************************************************************/
 void set_counter(uint8_t *buff,uint16_t len,uint8_t channel)
 {
-    if(len - 5 != 8)
-    {
-        return;
-    }
-    if(Game_state == 0)///< normall mode
-    {
-        FM.counter[0] = *((uint16_t *)(buff + 3));
-        FM.counter[1] = *((uint16_t *)(buff + 5));
-        FM.counter[2] = *((uint16_t *)(buff + 7));
-        FM.counter[3] = *((uint16_t *)(buff + 9));
-        answer_bin(master_set_counter,(uint8_t *)FM.counter,8,channel);
-    }
-    else if(Game_state == 1) ///< administrator mode
-    {
-        Tmp_counter[0] = *((uint16_t *)(buff + 3));
-        Tmp_counter[1] = *((uint16_t *)(buff + 5));
-        Tmp_counter[2] = *((uint16_t *)(buff + 7));
-        Tmp_counter[3] = *((uint16_t *)(buff + 9));
-        answer_bin(master_set_counter,(uint8_t *)Tmp_counter,8,channel);
-
-    }
 }
 
 
@@ -775,19 +554,6 @@ void set_counter(uint8_t *buff,uint16_t len,uint8_t channel)
 *****************************************************************************************/
 void get_counter(uint8_t *buff,uint16_t len,uint8_t channel)
 {
-    if(len -5 != 0)
-    {
-        return;
-    }
-    if(Game_state == 0)///< normall mode
-    {
-        answer_bin(master_get_counter,(uint8_t *)FM.counter,8,channel);
-    }
-    else if(Game_state == 1) ///< administrator mode
-    {
-        answer_bin(master_get_counter,(uint8_t *)Tmp_counter,8,channel);
-
-    }
 }
 
 /** **************************************************************************************

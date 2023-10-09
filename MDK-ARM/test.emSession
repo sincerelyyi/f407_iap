@@ -22,7 +22,10 @@
   <ProjectSessionItem path="test"/>
   <ProjectSessionItem path="test;test"/>
   <ProjectSessionItem path="test;test;Application/User/Core"/>
+  <ProjectSessionItem path="test;test;Drivers/STM32F4xx_HAL_Driver"/>
   <ProjectSessionItem path="test;test;Internal Files"/>
+  <ProjectSessionItem path="test;test;Middlewares/USB_Device_Library"/>
+  <ProjectSessionItem path="test;test;myware"/>
   <SourceCodeControlLogin password="F9BB6682F5D56822" user="sincerelyyi &lt;sincerely_yi@outlook.com>"/>
  </Project>
  <Register1>
@@ -44,13 +47,7 @@
   <Trace enabled="Yes"/>
  </TraceWindow>
  <Watch1>
-  <Watches active="1" update="Twice a Second">
-   <Watchpoint expression="huart6" name="huart6" radix="-1" linenumber="32" filename="../Core/Src/usart.c"/>
-   <Watchpoint expression="uwTick" name="uwTick" radix="-1" linenumber="325" filename="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c"/>
-   <Watchpoint expression="Lkt" name="Lkt" radix="-1" linenumber="23" filename="../myware/lkt4101.c"/>
-   <Watchpoint expression="dog" name="dog" radix="-1" linenumber="530" filename="../myware/lkt4101.c"/>
-   <Watchpoint expression="tick_10us" name="tick_10us" radix="-1" linenumber="579" filename="../myware/lkt4101.c"/>
-  </Watches>
+  <Watches active="1" update="Twice a Second"/>
  </Watch1>
  <Watch2>
   <Watches active="0" update="Never"/>
@@ -62,18 +59,13 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="35" y="705" useTextEdit="1" path="../myware/lkt4101.c" left="0" top="699" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="33" y="99" useTextEdit="1" path="../myware/lkt4101.h" left="0" top="93" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="83" useTextEdit="1" path="../Core/Src/main.c" left="0" selected="1" top="83" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="353" useTextEdit="1" path="../myware/boardtest.c" left="0" top="340" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" path="../myware/packet_handle.c" left="0" top="1003" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="40" y="106" useTextEdit="1" path="../myware/mainFunction.c" left="0" top="100" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="324" useTextEdit="1" path="../../tk_software/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c" left="0" top="313" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" path="../internal/STM32F407_Registers.xml" left="0" top="0" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" path="../internal/STM32F407VETx_MemoryMap.xml" left="0" top="0" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" path="../internal/STM32F4xx_Flash.icf" left="0" top="142" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" path="../internal/STM32F4xx_Startup.s" left="0" top="195" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" path="../internal/SEGGER_THUMB_Startup.s" left="0" top="198" codecName="UTF-8"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" path="../internal/SEGGER_THUMB_Startup.s" left="0" top="282" codecName="UTF-8"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" path="../internal/stm32f407xx_Vectors.s" left="0" top="0" codecName="UTF-8"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="79" useTextEdit="1" path="../internal/STM32F4xx_Flash.icf" left="0" top="66" codecName="UTF-8"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="49" y="15" useTextEdit="1" path="Output/Exe/test.map" left="0" top="180" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="75" useTextEdit="1" path="../Core/Src/main.c" left="0" top="62" codecName="UTF-8"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="36" useTextEdit="1" path="../myware/mainFunction.c" left="0" top="23" codecName="UTF-8"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1478" useTextEdit="1" path="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c" left="0" selected="1" top="1465" codecName="UTF-8"/>
  </Files>
  <EMStudioWindow activeProject="test" fileDialogDefaultFilter="*" autoConnectTarget="GDB Server" buildConfiguration="test Internal" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/home/jiayi/mysoftware/tk_software/internal" debugSearchPath="" autoConnectCapabilities="1343"/>
 </session>

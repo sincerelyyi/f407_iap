@@ -79,8 +79,6 @@ void Error_Handler(void);
 #define IN4_GPIO_Port GPIOC
 #define IN3_Pin GPIO_PIN_2
 #define IN3_GPIO_Port GPIOC
-#define SPI_DAT_Pin GPIO_PIN_3
-#define SPI_DAT_GPIO_Port GPIOC
 #define U4_TX_Pin GPIO_PIN_0
 #define U4_TX_GPIO_Port GPIOA
 #define U4_RX_Pin GPIO_PIN_1
@@ -91,12 +89,8 @@ void Error_Handler(void);
 #define OUT8_GPIO_Port GPIOA
 #define IN1_Pin GPIO_PIN_4
 #define IN1_GPIO_Port GPIOA
-#define SCK_6024_Pin GPIO_PIN_5
-#define SCK_6024_GPIO_Port GPIOA
 #define POL_6024_Pin GPIO_PIN_6
 #define POL_6024_GPIO_Port GPIOA
-#define DAT_6024_Pin GPIO_PIN_7
-#define DAT_6024_GPIO_Port GPIOA
 #define i_qe_Pin GPIO_PIN_4
 #define i_qe_GPIO_Port GPIOC
 #define OUT7_Pin GPIO_PIN_1
@@ -113,8 +107,6 @@ void Error_Handler(void);
 #define OUT2_GPIO_Port GPIOB
 #define OUT1_Pin GPIO_PIN_11
 #define OUT1_GPIO_Port GPIOB
-#define SPI_CLK_Pin GPIO_PIN_13
-#define SPI_CLK_GPIO_Port GPIOB
 #define VER0_Pin GPIO_PIN_10
 #define VER0_GPIO_Port GPIOD
 #define VER1_Pin GPIO_PIN_11

@@ -18,22 +18,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "adc.h"
 #include "dma.h"
-#include "i2c.h"
-#include "rng.h"
-#include "spi.h"
-#include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "uartPrintf.h"
-#include "time_handle.h"
 #include "mainFunction.h"
-#include "lkt4101.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,28 +89,9 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_SPI1_Init();
-  MX_SPI2_Init();
-  MX_UART4_Init();
-  MX_UART5_Init();
   MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
-  MX_USART3_UART_Init();
-  MX_USART6_UART_Init();
-  MX_I2C1_Init();
-  MX_TIM1_Init();
-  MX_TIM2_Init();
-  MX_TIM3_Init();
-  MX_TIM5_Init();
-  MX_ADC1_Init();
-  MX_RNG_Init();
   MX_USB_DEVICE_Init();
-  MX_TIM12_Init();
-  MX_TIM13_Init();
-  MX_TIM14_Init();
-  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
-  Lkt_init();
   //HAL_TIM_Base_Start_IT(&htim12);
   //HAL_TIM_Base_Start_IT(&htim13);
   //HAL_TIM_Base_Start_IT(&htim14);
@@ -184,23 +157,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-        if(htim ==  &htim12)
-        {
-                time_10ms_handle();
-        }
-
-        if(htim ==  &htim13)
-        {
-                time_100ms_handle();
-        }
-
-        if(htim ==  &htim14)
-        {
-                time_1000ms_handle();
-        }
-}
 /* USER CODE END 4 */
 
 /**

@@ -38,7 +38,8 @@
       file_codec="UTF-8"
       gcc_optimization_level="Level 3 for more speed"
       gdb_server_command_line="&quot;$(JLinkDir)/JLinkGDBServerCLExe&quot; -device &quot;$(DeviceName)&quot; -if swd -silent"
-      link_linker_script_file="/home/jiayi/mysoftware/tk_software/internal/STM32F4xx_Flash.icf"
+      link_linker_script_file="../internal/STM32F4xx_Flash.icf"
+      linker_memory_map_file="../internal/STM32F407VETx_MemoryMap.xml"
       linker_section_placements_segments="FLASH1 RX 0x08000000 0x00080000;RAM1 RWX 0x20000000 0x00020000;"
       project_directory=""
       project_type="Executable" />
@@ -80,26 +81,22 @@
       gcc_short_enum="None"
       gdb_server_command_line="&quot;JLinkGDBServerCLExe&quot; -device &quot;$(DeviceName)&quot; -if swd -silent"
       is_cpp_project="No"
-      linker_memory_map_file="/home/jiayi/mysoftware/tk_software/internal/STM32F407VETx_MemoryMap.xml"
+      link_linker_script_file="../internal/STM32F4xx_Flash.icf"
+      linker_memory_map_file="../internal/STM32F407VETx_MemoryMap.xml"
       linker_printf_fp_enabled="Double"
       linker_printf_width_precision_supported="Yes"
-      linker_section_placements_segments="FLASH1 RX 0x08010000 0x00070000;RAM1 RWX 0x20000000 0x00020000;"
+      linker_section_placements_segments="FLASH1 RX 0x08060000 0x00020000;RAM1 RWX 0x20000000 0x0001ff00;"
       project_can_build_in_parallel="Yes"
       stack_overflow_prevention="No" />
     <folder Name="::CMSIS" />
     <folder Name="Application/User/Core">
-      <file file_name="../Core/Src/adc.c" />
       <file file_name="../Core/Src/dma.c" />
       <file file_name="../Core/Src/gpio.c" />
-      <file file_name="../Core/Src/i2c.c" />
       <file file_name="../Core/Src/main.c">
         <configuration Name="Common" file_codec="UTF-8" />
       </file>
-      <file file_name="../Core/Src/rng.c" />
-      <file file_name="../Core/Src/spi.c" />
       <file file_name="../Core/Src/stm32f4xx_hal_msp.c" />
       <file file_name="../Core/Src/stm32f4xx_it.c" />
-      <file file_name="../Core/Src/tim.c" />
       <file file_name="../Core/Src/usart.c" />
     </folder>
     <folder Name="Application/User/USB_DEVICE/App">
@@ -117,10 +114,7 @@
       <file file_name="../Core/Src/system_stm32f4xx.c" />
     </folder>
     <folder Name="Drivers/STM32F4xx_HAL_Driver">
-      <file file_name="../myware/Fm24c64.h" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c" />
-      <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c" />
-      <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c" />
@@ -129,20 +123,15 @@
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c" />
-      <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c" />
-      <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c" />
-      <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c" />
-      <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c" />
-      <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c" />
       <file file_name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c" />
     </folder>
     <folder Name="Internal Files">
@@ -160,37 +149,15 @@
       <file file_name="../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c" />
     </folder>
     <folder Name="myware">
-      <file file_name="../myware/74HC165.c" />
-      <file file_name="../myware/74HC165.h" />
-      <file file_name="../myware/boardtest.c" />
-      <file file_name="../myware/boardtest.h" />
-      <file file_name="../myware/coin.c" />
-      <file file_name="../myware/coin.h" />
       <file file_name="../myware/command.h" />
-      <file file_name="../myware/counter.c" />
-      <file file_name="../myware/counter.h" />
-      <file file_name="../myware/fifo.c" />
-      <file file_name="../myware/fifo.h" />
-      <file file_name="../myware/Fm24c64.c" />
-      <file file_name="../myware/Fm24c64.h" />
       <file file_name="../myware/LIB_SoftDog.c">
         <configuration Name="test Internal" build_exclude_from_build="Yes" />
       </file>
       <file file_name="../myware/LIB_SoftDog.h" />
-      <file file_name="../myware/light.c" />
-      <file file_name="../myware/light.h" />
-      <file file_name="../myware/lkt4101.c" />
-      <file file_name="../myware/lkt4101.h" />
       <file file_name="../myware/mainFunction.c" />
       <file file_name="../myware/mainFunction.h" />
-      <file file_name="../myware/MBI6024.c" />
-      <file file_name="../myware/MBI6024.h" />
       <file file_name="../myware/packet_handle.c" />
       <file file_name="../myware/packet_handle.h" />
-      <file file_name="../myware/time_handle.c" />
-      <file file_name="../myware/time_handle.h" />
-      <file file_name="../myware/uartPrintf.c" />
-      <file file_name="../myware/uartPrintf.h" />
       <file file_name="../myware/version.c" />
       <file file_name="../myware/version.h" />
     </folder>
