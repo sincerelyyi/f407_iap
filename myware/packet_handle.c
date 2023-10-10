@@ -617,7 +617,7 @@ void  senddata(uint8_t *buff,uint16_t len,uint8_t channel)
     uint8_t state = 0;
 
     FLASH_EraseInitTypeDef my_flash;
-    __disable_irq();                                        // 关闭所有中断
+   // __disable_irq();                                        // 关闭所有中断
     HAL_FLASH_Unlock();
     __HAL_FLASH_DATA_CACHE_DISABLE();
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
@@ -857,7 +857,7 @@ void usb_pickup_packet(void)
                     else                                                    //整个数据包不全在此buff中，等待数据补充
                     {
                         //要防止假包
-                        //break;  注释掉break可以防止假包
+                        break; //注释掉break可以防止假包
                     }
                 }
                 else                                                        //数据段n不在此buff中，等待数据补充
