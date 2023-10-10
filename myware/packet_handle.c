@@ -230,70 +230,6 @@ void active_bin(uint8_t command,uint8_t * buff,uint16_t len,uint8_t channel)
 }
 
 /** **************************************************************************************
-* @brief channel_test
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度，通过哪个channel工作
-* @return void
-* @retval
-*****************************************************************************************/
-void channel_test(uint8_t *buff,uint16_t len,uint8_t channel)
-{
-    //answer_bin(master_channel_test, buff+3, len-5, channel);
-    buff[1] = buff[1] | 0x80;         //命令变为回复命令
-    buff[len-2] = buff[len-2] + 0x80; //改变checksum位
-    if(channel == USB_CHANNEL)
-        usb_send(buff,len);
-    if(channel == RS232_CHANNEL)
-        rs232_send(buff,len);
-}
-
-/** **************************************************************************************
-* @brief get_channel
-* @note
-* @param void
-* @return void
-* @retval
-*****************************************************************************************/
-void get_channel(uint8_t channel)
-{
-    if(channel == USB_CHANNEL)
-        answer_string(master_get_channel,"TK_CDC_ACM",channel);
-    if(channel == RS232_CHANNEL)
-        answer_string(master_get_channel,"TK_RS232",channel);
-}
-
-/** **************************************************************************************
-* @brief switch Comunucate_channel
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void switch_channel(uint8_t *buff,uint16_t len,uint8_t channel)
-{
-    if(len > 20)
-    {
-        return;
-    }
-
-    if(strcmp((char *)(buff+3),"TK_CDC_ACM") == 0)
-    {
-        answer_string(master_switch_channel,"TK_CDC_ACM",channel);
-        Comunucate_channel = 1;
-    }
-    else if(strcmp((char *)(buff+3),"TK_RS232") == 0)
-    {
-        answer_string(master_switch_channel,"TK_RS232",channel);
-        Comunucate_channel = 0;
-    }
-    else
-    {
-        answer_string(master_switch_channel,"illegal Comunucate_channel",channel);
-    }
-
-}
-
-/** **************************************************************************************
 * @brief get hardware version
 * @note
 * @param void
@@ -317,244 +253,6 @@ void get_software(uint8_t channel)
     answer_string(master_get_software,software_version(),channel);
 }
 
-/** **************************************************************************************
-* @brief get hardware UID
-* @note
-* @param void
-* @return void
-* @retval
-*****************************************************************************************/
-void get_UID(uint8_t channel)
-{
-    uint8_t buff[] = {0x77,0x77,0x77,0x77,0x77,0x77,0x77,0x77};
-    answer_bin(master_get_UID,buff,sizeof(buff),channel);
-}
-
-/** **************************************************************************************
-* @brief get keys
-* @note
-* @param void
-* @return void
-* @retval
-*****************************************************************************************/
-void get_keys(uint8_t channel)
-{
-}
-
-/** **************************************************************************************
-* @brief get coins
-* @note
-* @param void
-* @return void
-* @retval
-*****************************************************************************************/
-void get_coins(uint8_t channel)
-{
-}
-
-/** **************************************************************************************
-* @brief decrease_coins
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void decrease_coins(uint8_t *buff,uint16_t len,uint8_t channel)
-{
-}
-
-/** **************************************************************************************
-* @brief reset_mcu
-* @note
-* @param void
-* @return void
-* @retval
-*****************************************************************************************/
-void reset_mcu(uint8_t channel)
-{
-    answer_string(master_reset_mcu,"mcu_restart",channel);
-    //发送缓存
-    while(CDC_Transmit_FS(UserTxBufferFS[Usb_send_in], Usb_send_p))
-    {
-        if(hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
-        {
-            return;
-        }
-    }
-    Usb_send_p = 0;
-    HAL_Delay(100);
-    __disable_irq();    //关闭全局中断
-    NVIC_SystemReset(); // 复位
-}
-
-/** **************************************************************************************
-* @brief reset_usb
-* @note
-* @param void
-* @return void
-* @retval
-*****************************************************************************************/
-void reset_usb(uint8_t channel)
-{
-    answer_string(master_reset_usb,"usb_restart",channel);
-    //发送缓存
-    while(CDC_Transmit_FS(UserTxBufferFS[Usb_send_in], Usb_send_p))
-    {
-        if(hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
-        {
-            return;
-        }
-    }
-    Usb_send_p = 0;
-    Usb_receive_out = 0;
-    Usb_receive_in = 0;
-    HAL_Delay(100);
-
-    USBD_DeInit(&hUsbDeviceFS);
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
-    HAL_Delay(500);    //  这里可以适当加点延时，可以保证有重枚举有效
-    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
-    HAL_Delay(500);    //  这里可以适当加点延时，可以保证有重枚举有效
-    MX_USB_DEVICE_Init();
-}
-
-/** **************************************************************************************
-* @brief pwm_ll pwm的逐个通道控制。
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void pwm_ll(uint8_t *buff,uint16_t len)
-{
-}
-
-/** **************************************************************************************
-* @brief circle_ll逐个通道控制。
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void circle_ll(uint8_t *buff,uint16_t len)
-{
-}
-
-/** **************************************************************************************
-* @brief pwm_channel 逐个通道样式控制。
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void pwm_channel(uint8_t *buff,uint16_t len)
-{
-}
-
-/** **************************************************************************************
-* @brief circle_channel 逐个通道样式控制。
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void circle_channel(uint8_t *buff,uint16_t len)
-{
-}
-
-/** **************************************************************************************
-* @brief pwm_all pwm整体样式控制。
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void pwm_all(uint8_t *buff,uint16_t len)
-{
-}
-
-/** **************************************************************************************
-* @brief circle_all 环形灯整体样式控制。
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void circle_all(uint8_t *buff,uint16_t len)
-{
-}
-
-/** **************************************************************************************
-* @brief 获取pwm灯组状态
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-static void get_pwm_state(uint8_t *buff,uint16_t len,uint8_t channel)
-{
-}
-
-/** **************************************************************************************
-* @brief 获取circle灯组状态
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-static void get_circle_state(uint8_t *buff,uint16_t len,uint8_t channel)
-{
-}
-
-/** **************************************************************************************
-* @brief set game state
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void set_game_state(uint8_t *buff,uint16_t len,uint8_t channel)
-{
-}
-
-/** **************************************************************************************
-* @brief get game state
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void get_game_state(uint8_t *buff,uint16_t len,uint8_t channel)
-{
-}
-
-/** **************************************************************************************
-* @brief set counter
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void set_counter(uint8_t *buff,uint16_t len,uint8_t channel)
-{
-}
-
-
-/** **************************************************************************************
-* @brief get counter
-* @note
-* @param buff:要处理的数据指针， len：要处理的数据长度
-* @return void
-* @retval
-*****************************************************************************************/
-void get_counter(uint8_t *buff,uint16_t len,uint8_t channel)
-{
-}
 
 /** **************************************************************************************
   * @brief 判断是否在iap段
@@ -617,7 +315,7 @@ void  senddata(uint8_t *buff,uint16_t len,uint8_t channel)
     uint8_t state = 0;
 
     FLASH_EraseInitTypeDef my_flash;
-   // __disable_irq();                                        // 关闭所有中断
+    // __disable_irq();                                        // 关闭所有中断
     HAL_FLASH_Unlock();
     __HAL_FLASH_DATA_CACHE_DISABLE();
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
@@ -707,76 +405,11 @@ void packet_receive_handle(uint8_t *buff,uint16_t len,uint8_t channel)
 {
     switch (buff[1])
     {
-    case master_channel_test:
-        channel_test(buff,len,channel);
-        break;
-    case master_get_channel:
-        get_channel(channel);
-        break;
-    case master_switch_channel:
-        switch_channel(buff,len,channel);
-        break;
     case master_get_hardware:
         get_hardware(channel);
         break;
     case master_get_software:
         get_software(channel);
-        break;
-    case master_get_UID:
-        get_UID(channel);
-        break;
-    case master_get_keys:
-        get_keys(channel);
-        break;
-    case master_get_coins:
-        get_coins(channel);
-        break;
-    case master_decrease_coins:
-        decrease_coins(buff,len,channel);
-        break;
-    case master_out_cards:
-        break;
-    case master_reset_mcu:
-        reset_mcu(channel);
-        break;
-    case master_reset_usb:
-        reset_usb(channel);
-        break;
-    case master_pwm_ll:
-        pwm_ll(buff,len);
-        break;
-    case master_circle_ll:
-        circle_ll(buff,len);
-        break;
-    case master_pwm_channel:
-        pwm_channel(buff, len);
-        break;
-    case master_circle_channel:
-        circle_channel(buff, len);
-        break;
-    case master_pwm_all:
-        pwm_all(buff, len);
-        break;
-    case master_circle_all:
-        circle_all(buff, len);
-        break;
-    case master_get_pwm_state:
-        get_pwm_state(buff, len, channel);
-        break;
-    case master_get_circle_state:
-        get_circle_state(buff, len, channel);
-        break;
-    case master_set_game_state:
-        set_game_state(buff,len,channel);
-        break;
-    case master_get_game_state:
-        get_game_state(buff,len,channel);
-        break;
-    case master_set_counter:
-        set_counter(buff,len,channel);
-        break;
-    case master_get_counter:
-        get_counter(buff,len,channel);
         break;
     case master_iniap:
         iniap(buff, len, channel);
@@ -810,6 +443,7 @@ uint8_t usb_buff[size] = {0};
 void usb_pickup_packet(void)
 {
     uint16_t number = 0;
+    uint16_t tmp_handl_p = 0xffff; ///< 为防止假包暂存处理计数i
     for(uint8_t packet=0; packet < USBRECEIVESIZE*APP_RX_DATA_SIZE/size; packet++)
     {
         if(Usb_receive_in == Usb_receive_out) ///<无数据，返回
@@ -851,13 +485,23 @@ void usb_pickup_packet(void)
                             {
                                 packet_receive_handle(usb_buff+i,number+5,USB_CHANNEL);        //交给数据处理
                                 i = i+ number + 4;
+                                tmp_handl_p = 0xffff; ///< 怀疑假包后面有真包，坐实怀疑。0xffff是为了for后面恢复假包地址
                             }
                         }
                     }
                     else                                                    //整个数据包不全在此buff中，等待数据补充
                     {
                         //要防止假包
-                        break; //注释掉break可以防止假包
+                        if(tmp_handl_p == 0xffff)                           //之前没有进入怀疑假包状态
+                        {
+                            tmp_handl_p = i;
+                        }
+                        else                                                //之前已经进入了怀疑假包状态
+                        {
+                            i = tmp_handl_p;                                //恢复怀疑假包的地址
+                            tmp_handl_p = 0xffff;
+                            break;                                          //退出循环体，补充数据
+                        }
                     }
                 }
                 else                                                        //数据段n不在此buff中，等待数据补充
@@ -865,6 +509,11 @@ void usb_pickup_packet(void)
                     break;
                 }
             }
+        }
+        if(tmp_handl_p != 0xffff) ///< 怀疑的假包后面没有真包
+        {
+            i = tmp_handl_p; ///< 恢复怀疑假包的地址
+            tmp_handl_p = 0xffff;
         }
         //全部处理，buff_P.有没有处理玩的放在前面
         uint16_t k;
