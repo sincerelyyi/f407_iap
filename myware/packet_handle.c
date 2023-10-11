@@ -7,9 +7,9 @@
  * @version         v0.1
  * @copyright       Copyright (c) 2020-2050  zhangjiayi
  * @par             LastEdit
- * @LastEditTime    2023-04-02 12:23:23
+ * @LastEditTime    2023-10-11 12:23:23
  * @LastEditors     zhangjiayi
- * @FilePath        /test/myware/time_handle.c
+ * @FilePath        /test/myware/packet_handle.c
  *****************************************************************************************/
 #include "main.h"
 #include "packet_handle.h"
@@ -28,7 +28,7 @@
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
 uint16_t Usb_send_p = 0;
-uint8_t Comunucate_channel = 0;     //选择主动发送通道，0，usb，1，rs232
+uint8_t Comunucate_channel = ALL_CHANNEL;    //选择主动发送通道，USB_CHANNEL,RS232_CHANNEL,ALL_CHANNEL
 
 uint8_t Rs232_receive_buff[RS232_RECEIVE_SIZE] = {0};
 #define RS232_SEND_SIZE 1024
@@ -146,9 +146,9 @@ static inline void _string(uint8_t command,char * string,uint8_t isanswer,uint8_
     answer[sizeof(answer)-2] =0;
     answer[sizeof(answer)-1] = 0xaa;
     answer[sizeof(answer)-2] = 0-checksum(answer,sizeof(answer));     //赋值checksum位
-    if(channel == USB_CHANNEL)
+    if(channel & USB_CHANNEL)
         usb_send(answer,sizeof(answer));
-    if(channel == RS232_CHANNEL)
+    if(channel & RS232_CHANNEL)
         rs232_send(answer,sizeof(answer));
 }
 
@@ -174,9 +174,9 @@ static inline void _bin(uint8_t command,uint8_t * buff,uint16_t len,uint8_t isan
     answer[sizeof(answer)-2] =0;
     answer[sizeof(answer)-1] = 0xaa;
     answer[sizeof(answer)-2] = 0-checksum(answer,sizeof(answer));     //赋值checksum位
-    if(channel == USB_CHANNEL)
+    if(channel & USB_CHANNEL)
         usb_send(answer,sizeof(answer));
-    if(channel == RS232_CHANNEL)
+    if(channel & RS232_CHANNEL)
         rs232_send(answer,sizeof(answer));
 }
 
