@@ -41,13 +41,12 @@ typedef enum _command
     master_set_counter			= 0x16,
     master_get_counter			= 0x17,
     //系统指令
-    master_isiap                = 0x30, ///< 用于app段确认是否有iap
+    master_isiap                = 0x30, ///< 如果回复0,在app段，没有检测到iap;1,在app段，检测到有iap;在iap段
     master_jumptoiap            = 0x31, ///< 用于app段跳转到iap段
-    master_iniap                = 0x32, ///< 用于iap段确认是否正在iap
-    master_jumptoapp            = 0x33, ///< 用于iap段跳转到app段
-    master_sum                  = 0x34,
-    master_senddata             = 0x35,
-    master_enddata              = 0x36,
+    master_jumptoapp            = 0x32, ///< 用于iap段跳转到app段
+    master_sum                  = 0x33,
+    master_senddata             = 0x34,
+    master_enddata              = 0x35,
 
 
     slave_channel_test			= 0x40,

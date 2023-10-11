@@ -253,17 +253,17 @@ void get_software(uint8_t channel)
     answer_string(master_get_software,software_version(),channel);
 }
 
-
 /** **************************************************************************************
-  * @brief 判断是否在iap段
+  * @brief 判断是否有iap段
   * @note
   * @param buff:要处理的数据指针， len：要处理的数据长度
   * @return void
   * @retval
   *****************************************************************************************/
-void  iniap(uint8_t *buff,uint16_t len,uint8_t channel)
+void  isiap(uint8_t *buff,uint16_t len,uint8_t channel)
 {
-    answer_bin(master_iniap, NULL, 0, channel);
+    uint8_t state = 2;
+    answer_bin(master_isiap, &state, 1, channel);
 }
 
 /** **************************************************************************************
@@ -411,8 +411,8 @@ void packet_receive_handle(uint8_t *buff,uint16_t len,uint8_t channel)
     case master_get_software:
         get_software(channel);
         break;
-    case master_iniap:
-        iniap(buff, len, channel);
+    case master_isiap:
+        isiap(buff, len, channel);
         break;
     case master_jumptoapp:
         jumptoapp(buff,len,channel);
