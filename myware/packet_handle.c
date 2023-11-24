@@ -325,7 +325,7 @@ void  senddata(uint8_t *buff,uint16_t len,uint8_t channel)
     {
         my_flash.TypeErase = FLASH_TYPEERASE_SECTORS;
         my_flash.Sector = FLASH_SECTOR_4;
-        my_flash.NbSectors = 1;
+        my_flash.NbSectors = 3;
         my_flash.VoltageRange = VOLTAGE_RANGE_3;
         if(HAL_FLASHEx_Erase(&my_flash, &sectorerror) != HAL_OK)
         {
@@ -337,7 +337,7 @@ void  senddata(uint8_t *buff,uint16_t len,uint8_t channel)
             return;
         }
     }
-    if((Address - 0x8020000)%0x20000 == 0)
+    /*if((Address - 0x8020000)%0x20000 == 0)
     {
         __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
         my_flash.TypeErase = FLASH_TYPEERASE_SECTORS;
@@ -362,7 +362,7 @@ void  senddata(uint8_t *buff,uint16_t len,uint8_t channel)
             answer_bin(master_senddata, &state,1, channel);
             return;
         }
-    }
+    }*/
     for(uint8_t i = 0; i< len-9; i+=2)
     {
         if( HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, Address, *(uint16_t *)(buff+7+i)) != HAL_OK)

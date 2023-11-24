@@ -101,7 +101,7 @@ char * hardware_version(void)
  *****************************************************************************************/
 char * software_version(void)
 {
-    return "TK_SOFTWARE_V1.2";
+    return "TK_IAP_V1.0";
 }
 
 

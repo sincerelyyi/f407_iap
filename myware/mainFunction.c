@@ -46,8 +46,8 @@ void main_free(void)
         switch(enter_count%10)
         {
         case 0:
-    usb_pickup_packet();
-    rs232_pickup_packet();
+            usb_pickup_packet();
+            rs232_pickup_packet();
             break;
         case 1:
             break;
