@@ -204,7 +204,8 @@ $(BUILD_DIR):
 #######################################
 clean:
 	-rm -fR $(BUILD_DIR)
-
+install:
+	xxd -i build/WL_IO_F407.bin  >  ../../x86/tk_x86/common/setup.h
 #######################################
 # dependencies
 #######################################
