@@ -321,6 +321,24 @@ void  senddata(uint8_t *buff,uint16_t len,uint8_t channel)
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
     Address =  *(uint32_t *)(buff+3);
     //debug_printf("0x%.8x\n",Address);
+//bootload
+    if(Address ==  0x8000000)
+    {
+        my_flash.TypeErase = FLASH_TYPEERASE_SECTORS;
+        my_flash.Sector = FLASH_SECTOR_0;
+        my_flash.NbSectors = 4;
+        my_flash.VoltageRange = VOLTAGE_RANGE_3;
+        if(HAL_FLASHEx_Erase(&my_flash, &sectorerror) != HAL_OK)
+        {
+            __enable_irq();
+            __HAL_FLASH_DATA_CACHE_ENABLE();
+            HAL_FLASH_Lock();
+            state = 3;
+            answer_bin(buff[1], &state,1, channel);
+            return;
+        }
+    }
+    // app
     if(Address ==  0x8010000)
     {
         my_flash.TypeErase = FLASH_TYPEERASE_SECTORS;
