@@ -1,16 +1,15 @@
-/** **************************************************************************************
- * @file
- * @brief           usb传输事务处理
- * @note
- * @author          zhangjiayi
- * @date            2023-04-02 12:23:23
- * @version         v0.1
- * @copyright       Copyright (c) 2020-2050  zhangjiayi
- * @par             LastEdit
- * @LastEditTime    2023-10-11 12:23:23
- * @LastEditors     zhangjiayi
- * @FilePath        /test/myware/packet_handle.c
- *****************************************************************************************/
+/** ****************************************************************************
+* @file             myware/packet_handle.c
+* @brief            usb传输事务处理
+* @note             
+* @author           zhangjiayi
+* @date             2023-04-02 12:23:23
+* @version          V1
+* @copyright        Copyright (c) 2020-2050 zhangjiayi
+* @par              LastEdit
+* @LastEditTime     2026-08-28 12:38:45
+* @LastEditors      jiayi
+*******************************************************************************/
 #include "main.h"
 #include "packet_handle.h"
 #include "usbd_cdc_if.h"
@@ -230,19 +229,7 @@ void active_bin(uint8_t command,uint8_t * buff,uint16_t len,uint8_t channel)
 }
 
 /** **************************************************************************************
-* @brief get hardware version
-* @note
-* @param void
-* @return void
-* @retval
-*****************************************************************************************/
-void get_hardware(uint8_t channel)
-{
-    answer_string(master_get_hardware,hardware_version(),channel);
-}
-
-/** **************************************************************************************
-* @brief get hardware version
+* @brief get sofeware version
 * @note
 * @param void
 * @return void
@@ -423,9 +410,6 @@ void packet_receive_handle(uint8_t *buff,uint16_t len,uint8_t channel)
 {
     switch (buff[1])
     {
-    case master_get_hardware:
-        get_hardware(channel);
-        break;
     case master_get_software:
         get_software(channel);
         break;

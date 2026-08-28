@@ -1,16 +1,15 @@
-/** **************************************************************************************
- * @file
- * @brief           TK 主流程
- * @note
- * @author          zhangjiayi
- * @date            2023-04-01 12:23:23
- * @version         v0.1
- * @copyright       Copyright (c) 2020-2050  zhangjiayi
- * @par             LastEdit
- * @LastEditTime    2023-04-01 12:23:23
- * @LastEditors     zhangjiayi
- * @FilePath        /test/myware/mainFunction.c
- *****************************************************************************************/
+/** ****************************************************************************
+* @file             myware/mainFunction.c
+* @brief            TK 主流程
+* @note             
+* @author           zhangjiayi
+* @date             2023-04-01 12:23:23
+* @version          V1
+* @copyright        Copyright (c) 2020-2050 zhangjiayi
+* @par              LastEdit
+* @LastEditTime     2026-08-28 12:37:07
+* @LastEditors      jiayi
+*******************************************************************************/
 #include <stdio.h>
 #include <stm32f407xx.h>
 #include "usart.h"
@@ -41,7 +40,7 @@ void main_free(void)
         old_tick = new_tick;
         if(enter_count%100==0)
         {
-            HAL_GPIO_TogglePin(DOG_LED_GPIO_Port, DOG_LED_Pin);
+            HAL_GPIO_TogglePin(LED_NORMAL_GPIO_Port, LED_NORMAL_Pin);
         }
         switch(enter_count%10)
         {
