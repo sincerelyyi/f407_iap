@@ -4,10 +4,10 @@
 * @note             
 * @author           zhangjiayi
 * @date             2023-04-02 12:23:23
-* @version          V1
+* @version          V2
 * @copyright        Copyright (c) 2020-2050 zhangjiayi
 * @par              LastEdit
-* @LastEditTime     2026-08-28 12:38:45
+* @LastEditTime     2026-08-28 13:34:58
 * @LastEditors      jiayi
 *******************************************************************************/
 #include "main.h"
@@ -431,14 +431,13 @@ void packet_receive_handle(uint8_t *buff,uint16_t len,uint8_t channel)
         ;
     }
 }
-
-/** **************************************************************************************
+/** ****************************************************************************
 * @brief 解开usb接收到的数据包
 * @note
 * @param void
 * @return void
 * @retval
-*****************************************************************************************/
+*******************************************************************************/
 #define  size 2048
 uint16_t usb_buff_p = 0;
 uint8_t usb_buff[size] = {0};
@@ -446,220 +445,223 @@ void usb_pickup_packet(void)
 {
     uint16_t number = 0;
     uint16_t tmp_handl_p = 0xffff; ///< 为防止假包暂存处理计数i
-    for(uint8_t packet=0; packet < USBRECEIVESIZE*APP_RX_DATA_SIZE/size; packet++)
+    for (uint8_t packet = 0; packet < USBRECEIVESIZE * APP_RX_DATA_SIZE / size;
+        packet++)
     {
-        if(Usb_receive_in == Usb_receive_out) ///<无数据，返回
+        if (Usb_receive_in == Usb_receive_out) ///<无数据，返回
         {
             break;
         }
         //将usb接收缓存复制到数组buff
-        for(; Usb_receive_in != Usb_receive_out;)
+        for (; Usb_receive_in != Usb_receive_out;)
         {
-            if(Usb_receive_len[Usb_receive_out] > size -usb_buff_p )
+            if (Usb_receive_len[Usb_receive_out] > size - usb_buff_p)
             {
                 break;
             }
             else
             {
-                for(uint8_t j = 0; j<Usb_receive_len[Usb_receive_out]; j++)
+                for (uint8_t j = 0; j < Usb_receive_len[Usb_receive_out]; j++)
                 {
                     usb_buff[usb_buff_p++] =  UserRxBufferFS[Usb_receive_out][j];
                 }
-                Usb_receive_out = (1+Usb_receive_out)%USBRECEIVESIZE;
+                Usb_receive_out = (1 + Usb_receive_out) % USBRECEIVESIZE;
             }
         }
         //处理复制过来的数据
         uint16_t i;
-        for(i=0; i < usb_buff_p; i++)
+        for (i = 0; i < usb_buff_p; i++)
         {
-            if(usb_buff[i] == 0x55)
+            if (usb_buff[i] == 0x55)
             {
-                if((i+2)< usb_buff_p)                                           //数据段n就在此buff中
+                if ((i + 2) <
+                    usb_buff_p) //数据段n就在此buff中
                 {
-                    number = usb_buff[i+2];
-                    if(i+number +4 < usb_buff_p)                                //整个数据包都在此buff中
+                    number = usb_buff[i + 2];
+                    if (i + number + 4 <
+                        usb_buff_p) //整个数据包都在此buff中
                     {
                         //判断数据包是否有效
-                        if(usb_buff[i+number+4] == 0xaa)      //包尾有效
+                        if (usb_buff[i + number + 4] == 0xaa) //包尾有效
                         {
 
-                            if(checksum(usb_buff+i,number +5) ==0)             //checksum验证成功，数据包最终有效
+                            if (checksum(usb_buff + i, number + 5) ==
+                                0)       //checksum验证成功，数据包最终有效
                             {
-                                packet_receive_handle(usb_buff+i,number+5,USB_CHANNEL);        //交给数据处理
-                                i = i+ number + 4;
-                                tmp_handl_p = 0xffff; ///< 怀疑假包后面有真包，坐实怀疑。0xffff是为了for后面恢复假包地址
+                                packet_receive_handle(usb_buff + i, number + 5,
+                                    USB_CHANNEL);  //交给数据处理
+                                i = i + number + 4;
+                                ///< 怀疑假包后面有真包，坐实怀疑。0xffff是为了for后面恢复假包地址
+                                tmp_handl_p = 0xffff;
                             }
                         }
                     }
-                    else                                                    //整个数据包不全在此buff中，等待数据补充
+                    else //整个数据包不全在此buff中，等待数据补充
                     {
                         //要防止假包
-                        if(tmp_handl_p == 0xffff)                           //之前没有进入怀疑假包状态
+                        if (tmp_handl_p == 0xffff)  //之前没有进入怀疑假包状态
                         {
                             tmp_handl_p = i;
                         }
-                        else                                                //之前已经进入了怀疑假包状态
-                        {
-                            i = tmp_handl_p;                                //恢复怀疑假包的地址
-                            tmp_handl_p = 0xffff;
-                            break;                                          //退出循环体，补充数据
-                        }
                     }
                 }
-                else                                                        //数据段n不在此buff中，等待数据补充
+                else //数据段n不在此buff中，等待数据补充
                 {
                     break;
                 }
             }
         }
-        if(tmp_handl_p != 0xffff) ///< 怀疑的假包后面没有真包
+        if (tmp_handl_p != 0xffff) ///< 怀疑的假包后面没有真包
         {
             i = tmp_handl_p; ///< 恢复怀疑假包的地址
             tmp_handl_p = 0xffff;
         }
         //全部处理，buff_P.有没有处理玩的放在前面
         uint16_t k;
-        for(k = 0; k< usb_buff_p-i;)
+        for (k = 0; k < usb_buff_p - i;)
         {
-
-            usb_buff[k] = usb_buff[i+k];                                        //等待数据补充,将之前没有处理的数据放在buff前面。
+            //等待数据补充,将之前没有处理的数据放在buff前面。
+            usb_buff[k] = usb_buff[i + k];
             k++;
 
         }
         usb_buff_p = k;
     }
     //发送usb旧缓存
-    for(; Usb_send_in != Usb_send_out;)
+    for (; Usb_send_in != Usb_send_out;)
     {
-        if(Usb_send_len[Usb_send_out])   ///< 如果有数据，就发送
+        if (Usb_send_len[Usb_send_out])  ///< 如果有数据，就发送
         {
-            if(CDC_Transmit_FS(UserTxBufferFS[Usb_send_out], Usb_send_len[Usb_send_out]) == USBD_OK )
+            if (CDC_Transmit_FS(UserTxBufferFS[Usb_send_out],
+                Usb_send_len[Usb_send_out]) == USBD_OK)
             {
                 Usb_send_len[Usb_send_out] = 0;  ///< 发送成功后，数据长度归0
-                Usb_send_out = (Usb_send_out+1)% USBSENDSIZE;///< 发送成功，下一个
+                Usb_send_out = (Usb_send_out + 1) % USBSENDSIZE; ///< 发送成功，下一个
             }
             return;
         }
         else
         {
-            Usb_send_out = (Usb_send_out+1)% USBSENDSIZE; ///< 如果无数据，下一个
+            ///< 如果无数据，下一个
+            Usb_send_out = (Usb_send_out + 1) % USBSENDSIZE;
         }
     }
     //发送最新缓存
-    if(Usb_send_len[Usb_send_out])   ///< 如果有数据，就发送
+    if (Usb_send_len[Usb_send_out])  ///< 如果有数据，就发送
     {
-        if(CDC_Transmit_FS(UserTxBufferFS[Usb_send_out], Usb_send_len[Usb_send_out]) == USBD_OK )
+        if (CDC_Transmit_FS(UserTxBufferFS[Usb_send_out],
+            Usb_send_len[Usb_send_out]) == USBD_OK)
         {
-            memset(Usb_send_len,0,sizeof(Usb_send_len));                        ///< 发送成功后，清除所有旧数据
-            Usb_send_in = (Usb_send_in +1)%USBSENDSIZE;                ///< 切换发送缓存
-            Usb_send_p = 0;                                            ///< 当前指针归0
-            Usb_send_out = (Usb_send_out+1)% USBSENDSIZE;
+            ///< 发送成功后，清除所有旧数据
+            memset(Usb_send_len, 0, sizeof(Usb_send_len));
+            Usb_send_in = (Usb_send_in + 1) % USBSENDSIZE; ///< 切换发送缓存
+            Usb_send_p = 0;  ///< 当前指针归0
+            Usb_send_out = (Usb_send_out + 1) % USBSENDSIZE;
             return;
         }
     }
 }
 #undef size
 
-/** **************************************************************************************
+/** ****************************************************************************
 * @brief 解开rs232接收到的数据包
 * @note
 * @param void
 * @return void
 * @retval
-*****************************************************************************************/
+*******************************************************************************/
 #define rs232_top_p    ((RS232_RECEIVE_SIZE  - (huart1.hdmarx->Instance->NDTR))% RS232_RECEIVE_SIZE)
 void rs232_pickup_packet(void)
 {
     uint8_t handled_buff[300];
     uint16_t number = 0;
-    uint8_t * temp_p;
-    uint8_t sum =0;
+    uint8_t *temp_p;
+    uint8_t sum = 0;
     uint16_t tmp_handl_p = 0xffff; ///< 为防止假包暂存Rs232_handle_p
     //处理rs232 接收循环缓存
-    for(; rs232_top_p != Rs232_handle_p;)
+    for (; rs232_top_p != Rs232_handle_p;)
     {
-        if(Rs232_receive_buff[Rs232_handle_p] == 0x55)
+        if (Rs232_receive_buff[Rs232_handle_p] == 0x55)
         {
-            if((Rs232_handle_p + 1)%RS232_RECEIVE_SIZE != rs232_top_p)      //数据段n不在处理指针的前面,在，说明没有准备好数据                                        //数据段n就在此buff中
+            //数据段n在缓存中
+            if (((Rs232_handle_p + 1) % RS232_RECEIVE_SIZE != rs232_top_p) &&
+                ((Rs232_handle_p + 2) % RS232_RECEIVE_SIZE != rs232_top_p))
             {
-                number = Rs232_receive_buff[(Rs232_handle_p+2)%RS232_RECEIVE_SIZE];
-                if((rs232_top_p - Rs232_handle_p)% RS232_RECEIVE_SIZE > number +4)                                //整个数据包都在此buff中
+                number = Rs232_receive_buff[(Rs232_handle_p + 2) % RS232_RECEIVE_SIZE];
+                if ((rs232_top_p - Rs232_handle_p) % RS232_RECEIVE_SIZE > number +
+                    4) //整个数据包都在此buff中
                 {
                     //判断数据包是否有效
-                    if(Rs232_receive_buff[(Rs232_handle_p+number+4)%RS232_RECEIVE_SIZE] == 0xaa)      //包尾有效
+                    if (Rs232_receive_buff[(Rs232_handle_p + number + 4) % RS232_RECEIVE_SIZE] ==
+                        0xaa) //包尾有效
                     {
 
-                        for(uint16_t i = 0; i< number +5; i++)                      //checksum 计算
+                        for (uint16_t i = 0; i < number + 5; i++) //checksum 计算
                         {
-                            temp_p = Rs232_receive_buff +Rs232_handle_p +i;
-                            if(temp_p>=Rs232_receive_buff+RS232_RECEIVE_SIZE)
+                            temp_p = Rs232_receive_buff + Rs232_handle_p + i;
+                            if (temp_p >= Rs232_receive_buff + RS232_RECEIVE_SIZE)
                             {
                                 temp_p = temp_p - RS232_RECEIVE_SIZE;
                             }
                             sum += *temp_p;
                         }
-                        if(sum ==0)             //checksum验证成功，数据包最终有效
+                        if (sum == 0) //checksum验证成功，数据包最终有效
                         {
-                            for(uint16_t i= 0; i< number+5 ; i++ )
+                            for (uint16_t i = 0; i < number + 5 ; i++)
                             {
-                                handled_buff[i] = Rs232_receive_buff[(Rs232_handle_p +i)% RS232_RECEIVE_SIZE ];
+                                handled_buff[i] = Rs232_receive_buff[(Rs232_handle_p + i) % RS232_RECEIVE_SIZE];
                             }
-                            packet_receive_handle(handled_buff,number+5,RS232_CHANNEL);                //交给数据处理
-                            Rs232_handle_p = (Rs232_handle_p + number + 5)%RS232_RECEIVE_SIZE;
-                            tmp_handl_p = 0xffff; ///< 怀疑假包后面有真包，坐实怀疑。0xffff是为了for后面恢复假包地址
+                            packet_receive_handle(handled_buff, number + 5,
+                                RS232_CHANNEL); //交给数据处理
+                            Rs232_handle_p = (Rs232_handle_p + number + 5) % RS232_RECEIVE_SIZE;
+                            tmp_handl_p =
+                                0xffff; ///< 怀疑假包后面有真包，坐实怀疑。0xffff是为了for后面恢复假包地址
                         }
                         else //checksum无效的话，处理指针+1
                         {
-                            Rs232_handle_p = (1+Rs232_handle_p)%RS232_RECEIVE_SIZE;
+                            Rs232_handle_p = (1 + Rs232_handle_p) % RS232_RECEIVE_SIZE;
                         }
                     }
                     else //包尾无效的话，处理指针+1
                     {
-                        Rs232_handle_p = (1+Rs232_handle_p)%RS232_RECEIVE_SIZE;
+                        Rs232_handle_p = (1 + Rs232_handle_p) % RS232_RECEIVE_SIZE;
                     }
                 }
-                else                                                    //整个数据包不全在此buff中，等待数据补充
+                else //整个数据包不全在此buff中，等待数据补充
                 {
                     //要防止假包
-                    if(tmp_handl_p == 0xffff)                           //之前没有进入怀疑假包状态
+                    if (tmp_handl_p == 0xffff)  //之前没有进入怀疑假包状态
                     {
                         tmp_handl_p = Rs232_handle_p;
-                        Rs232_handle_p = (1+Rs232_handle_p)%RS232_RECEIVE_SIZE;
                     }
-                    else                                                //之前已经进入了怀疑假包状态
-                    {
-                        Rs232_handle_p = tmp_handl_p;                   //恢复怀疑假包的地址
-                        tmp_handl_p = 0xffff;
-                        break;                                          //退出循环体，补充数据
-                    }
+                    Rs232_handle_p = (1 + Rs232_handle_p) % RS232_RECEIVE_SIZE;
                 }
             }
-            else                                                        //数据段n不在此buff中，等待数据补充
+            else //数据段n不在此buff中，等待数据补充
             {
                 break;
             }
         }
         else
         {
-            Rs232_handle_p = (1+Rs232_handle_p)%RS232_RECEIVE_SIZE;
+            Rs232_handle_p = (1 + Rs232_handle_p) % RS232_RECEIVE_SIZE;
         }
     }
-    if(tmp_handl_p != 0xffff) ///< 怀疑的假包后面没有真包
+    if (tmp_handl_p != 0xffff) ///< 怀疑的假包后面没有真包
     {
         Rs232_handle_p = tmp_handl_p; ///< 恢复怀疑假包的地址
         tmp_handl_p = 0xffff;
     }
 
     //发送rs232缓存
-    if(Rs232_send_p[Rs232_pipo])
+    if (Rs232_send_p[Rs232_pipo])
     {
-        if(HAL_UART_Transmit_DMA(&huart1,Rs232_send_buff[Rs232_pipo],Rs232_send_p[Rs232_pipo%2]) == HAL_OK)
+        if (HAL_UART_Transmit_DMA(&huart1, Rs232_send_buff[Rs232_pipo],
+            Rs232_send_p[Rs232_pipo % 2]) == HAL_OK)
         {
-            Rs232_pipo = (Rs232_pipo+1)%2;
+            Rs232_pipo = (Rs232_pipo + 1) % 2;
             Rs232_send_p[0] = 0;
             Rs232_send_p[1] = 0;
         }
     }
-
-
 }
