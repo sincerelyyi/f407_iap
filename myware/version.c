@@ -4,12 +4,12 @@
 * @note             通过串口获取另外一块板的信息
 * @author           zhangjiayi
 * @date             2023-08-24 12:42:39
-* @version          V2
+* @version          V3
  v1.0:
     从tk iap 修改串口脚位而来的	
 * @copyright        Copyright (c) 2020-2050 zhangjiayi
 * @par              LastEdit
-* @LastEditTime     2026-08-28 12:55:21
+* @LastEditTime     2026-08-28 13:21:56
 * @LastEditors      jiayi
 *******************************************************************************/
 #include "version.h"
@@ -26,7 +26,7 @@
  *****************************************************************************************/
 char * software_version(void)
 {
-    return "IO03_IAP_V1.0";
+    return "TK_IAP_V1.0";
 }
 
 
