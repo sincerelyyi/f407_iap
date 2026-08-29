@@ -20,9 +20,9 @@ TARGET = WL_IO_F407
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
-OPT = -Og
+OPT = -Os
 
 
 #######################################
@@ -153,6 +153,7 @@ endif
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
+CFLAGS += -flto=4
 
 
 #######################################
