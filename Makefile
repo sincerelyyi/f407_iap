@@ -20,9 +20,9 @@ TARGET = WL_IO_F407
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
-OPT = -Og
+OPT = -Os
 
 
 #######################################
@@ -153,6 +153,7 @@ endif
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
+CFLAGS += -flto=4
 
 
 #######################################
@@ -167,7 +168,7 @@ LIBDIR =
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
-all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin outdir/io03_iap.hex
 
 
 #######################################
@@ -196,9 +197,13 @@ $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(BIN) $< $@
 
+outdir/io03_iap.hex: build/WL_IO_F407.hex outdir
+	cp build/WL_IO_F407.hex outdir/tk_iap.hex
+
 $(BUILD_DIR):
 	mkdir $@
-
+outdir:
+	mkdir outdir 
 #######################################
 # clean up
 #######################################
