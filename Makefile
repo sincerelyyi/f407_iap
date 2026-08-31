@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET = WL_IO_F407
+TARGET = TK_IAP
 
 
 ######################################
@@ -197,8 +197,8 @@ $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(BIN) $< $@
 
-outdir/io03_iap.hex: build/WL_IO_F407.hex outdir
-	cp build/WL_IO_F407.hex outdir/tk_iap.hex
+outdir/io03_iap.hex: $(BUILD_DIR)/$(TARGET).hex outdir
+	cp $(BUILD_DIR)/$(TARGET).hex outdir
 
 $(BUILD_DIR):
 	mkdir $@
@@ -210,7 +210,7 @@ outdir:
 clean:
 	-rm -fR $(BUILD_DIR)
 install:
-	xxd -i build/WL_IO_F407.bin  >  ../../x86/tk_x86/common/setup.h
+	xxd -i $(BUILD_DIR)/$(TARGET).bin  >  ../../x86/tk_x86/common/$(TARGET).h
 #######################################
 # dependencies
 #######################################
