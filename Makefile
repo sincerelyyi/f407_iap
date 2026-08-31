@@ -168,7 +168,7 @@ LIBDIR =
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
-all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin outdir/io03_iap.hex
+all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin outdir/$(TARGET).hex
 
 
 #######################################
@@ -197,7 +197,7 @@ $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(BIN) $< $@
 
-outdir/io03_iap.hex: $(BUILD_DIR)/$(TARGET).hex outdir
+outdir/$(TARGET).hex: $(BUILD_DIR)/$(TARGET).hex outdir
 	cp $(BUILD_DIR)/$(TARGET).hex outdir
 
 $(BUILD_DIR):
